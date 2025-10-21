@@ -1,6 +1,8 @@
 package es.unizar.webeng.lab3
 
 import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -47,7 +49,12 @@ class ControllerTests {
         // Hint: POST is not idempotent - each call creates a new resource.
         // Think about what the controller does when saving an employee.
         // Consider how to mock the repository to return different results for multiple calls.
-        TODO("Complete the mock setup for POST test")
+        every { employeeRepository.save(any<Employee>()) } answers {
+            Employee("Mary", "Manager", 1)
+        } andThenAnswer {
+            Employee("Mary", "Manager", 2)
+        }
+        verify(exactly = 2) { employeeRepository.save(any<Employee>()) }
 
         mvc
             .post("/employees") {
@@ -80,7 +87,7 @@ class ControllerTests {
         // VERIFY - COMPLETE ME!
         // Hint: What repository methods should be called for a POST operation?
         // What methods should NOT be called? Think about the difference between safe and unsafe operations.
-        TODO("Complete the verification for POST test")
+        verify(exactly = 2) { employeeRepository.save(any<Employee>()) }
     }
 
     @Test
